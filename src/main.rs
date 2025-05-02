@@ -14,5 +14,5 @@ fn main() {
     assert_eq!(grey_code(14), 9);
     assert_eq!(rpn("1011||="), true);
     assert_eq!(rpn("1011||=0>"), false);
-    print_truth_table("formula");
+    print_truth_table("AB&C|");
 }

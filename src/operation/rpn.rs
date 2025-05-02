@@ -8,57 +8,37 @@ pub fn rpn(proposition: &str) -> bool {
         .into_iter()
         .fold(vec![], |mut acc, c| {
             match c {
-                '0' | '1' => acc.push(c),
+                '0' | '1' => acc.push(if c == '1' {1} else {0}),
                 '!' => {
                     let a = acc.pop().unwrap();
-                    if a == '1' {
-                        acc.push('0');
-                    } else {
-                        acc.push('1');
-                    }
+                    acc.push(if a == 1 {1} else {0});
                 },
                 '&' => {
                     let b = acc.pop().unwrap();
                     let a = acc.pop().unwrap();
-                    if a == b && b == '1' {
-                        acc.push('1');
-                    } else {
-                        acc.push('0');
-                    }
+                    acc.push( a & b );
                 },
                 '|' => {
                     let b = acc.pop().unwrap();
                     let a = acc.pop().unwrap();
-                    if a == '1' || b == '1' {
-                        acc.push('1');
-                    } else {
-                        acc.push('0');
-                    }
+                    acc.push(a | b);
                 },
                 '^' => {
                     let b = acc.pop().unwrap();
                     let a = acc.pop().unwrap();
-                    if a != b {
-                        acc.push('1');
-                    } else {
-                        acc.push('0');
-                    }
+                    acc.push(a ^ b);
                 },
                 '>' => {
                     let b = acc.pop().unwrap();
                     let a = acc.pop().unwrap();
-                    if a == '1' {
+                    if a == 1 {
                         acc.push(b);
                     }
                 },
                 '=' => {
                     let b = acc.pop().unwrap();
                     let a = acc.pop().unwrap();
-                    if a == b {
-                        acc.push('1');
-                    } else {
-                        acc.push('0');
-                    }
+                    acc.push(if a == b {1} else {0});
                 }
                 _ => panic!("Proposition contains incorrect characters!"),
             };
@@ -66,5 +46,5 @@ pub fn rpn(proposition: &str) -> bool {
             acc
         })
         .first()
-        .expect("Proposition contains syntax errors!") == &'1'
+        .expect(&format!("Proposition contains syntax errors!\n Proposition: {proposition}")) == &1
 }
