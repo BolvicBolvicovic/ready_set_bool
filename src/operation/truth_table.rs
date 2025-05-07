@@ -1,11 +1,12 @@
 use std::collections::{HashMap, HashSet};
 
-use super::rpn::rpn;
+use super::rpn::{
+    rpn,
+    rpn_format,
+};
 
 pub fn print_truth_table(formula: &str) {
-    if let Some(_) = formula.find(|c: char| !"!&|^>=".contains(c) && !c.is_ascii_uppercase()) {
-        panic!("Proposition contains incorrect characters!");
-    }
+    rpn_format(formula);
 
     let mut letters = formula
         .chars()

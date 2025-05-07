@@ -6,6 +6,7 @@ use operation::{
     multiplier::multiplier,
     rpn::rpn,
     truth_table::print_truth_table,
+    negation_normal_form::negation_normal_form,
 };
 
 fn main() {
@@ -15,4 +16,7 @@ fn main() {
     assert_eq!(rpn("1011||="), true);
     assert_eq!(rpn("1011||=0>"), false);
     print_truth_table("AB&C|");
+    assert_eq!(negation_normal_form("A!!"), "A");
+    assert_eq!(negation_normal_form("AB>"), "A!B|");
+    assert_eq!(negation_normal_form("ABAA|>=B|"), "AB!AA||=B|");
 }

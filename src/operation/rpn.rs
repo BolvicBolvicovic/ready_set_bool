@@ -1,9 +1,14 @@
-pub fn rpn(proposition: &str) -> bool {
-    if let Some(_) = proposition.find(|c| !"01!&|^>=".contains(c)) {
+pub fn rpn_format(formula: &str) {
+    if let Some(_) = formula.find(|c: char| !"!&|^>=".contains(c) && !c.is_ascii_uppercase()) {
         panic!("Proposition contains incorrect characters!");
     }
+}
 
-    proposition
+pub fn rpn(formula: &str) -> bool {
+    if let Some(_) = formula.find(|c| !"01!&|^>=".contains(c)) {
+        panic!("Proposition contains incorrect characters!");
+    }
+    formula
         .chars()
         .into_iter()
         .fold(vec![], |mut acc, c| {
@@ -46,5 +51,5 @@ pub fn rpn(proposition: &str) -> bool {
             acc
         })
         .first()
-        .expect(&format!("Proposition contains syntax errors!\n Proposition: {proposition}")) == &1
+        .expect(&format!("Proposition contains syntax errors!\n Proposition: {formula}")) == &1
 }
