@@ -1,4 +1,5 @@
 use super::rpn::rpn_format;
+use crate::utils::swap_char::swap_char;
 
 struct NNF {
     formula: String,
@@ -34,25 +35,20 @@ impl NNF {
         if var_count - ope_count <= 1 {
             substring.rfind(['&', '|', '^', '=']).unwrap()
         } else {
-            let ope_to_jump = var_count - ope_count - 2;
-            let mut sub_to_chars = substring.chars();
-            let mut ope_jumped = 0;
-            let mut potential_char_idx = 0;
-            let mut current_idx = 0;
-            while ope_jumped < ope_to_jump {
-                if "&|^=".contains((&mut sub_to_chars).nth(0).unwrap()) {
-                    ope_jumped += 1;
-                    potential_char_idx -= 3;
-                } else {
-                    potential_char_idx += 1;
+            let mut current_index = 0;
+            let mut a = 0;
+            let mut b = 0;
+            for c in substring.chars() {
+                if "&|^=".contains(c) {
+                    a -= 1;
+                    b = current_index;
+                } else if c.is_ascii_uppercase() {
+                    a = b;
+                    b = current_index;
                 }
-                current_idx += 1;
+                current_index += 1;
             }
-            if potential_char_idx > 0 {
-                potential_char_idx
-            } else {
-                current_idx
-            }
+            a
         }
     }
 
@@ -62,8 +58,7 @@ impl NNF {
             let then = self.formula.find('>').unwrap();
             let left = self.formula[..then].to_string();
             let exclamation_idx = Self::a_index(&left) + 1;
-            self.formula.remove(then);
-            self.formula.insert(then, '|');
+            swap_char(&mut self.formula, then, '|').unwrap();
             self.formula.insert(exclamation_idx, '!');
         }
         self
@@ -74,5 +69,6 @@ pub fn negation_normal_form(formula: &str) -> String {
     NNF::new(formula)
         .delete_double_negation()
         .material_conditions()
+        .delete_double_negation()
         .formula
 }
