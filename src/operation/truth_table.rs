@@ -6,6 +6,14 @@ use super::rpn::{
 };
 
 pub fn print_truth_table(formula: &str) {
+    let _ = truth_table(formula, true);
+}
+
+pub fn sat(formula: &str) -> bool {
+    truth_table(formula, false)
+}
+
+fn truth_table(formula: &str, print_opt: bool) -> bool {
     rpn_format(formula);
 
     let mut letters = formula
@@ -32,19 +40,25 @@ pub fn print_truth_table(formula: &str) {
         .map(|(i, c)| (c, i))
         .collect::<HashMap<char, usize>>();
 
-    for i in 0..order.len() {
-        print!("| {} ", order[&i]);
+    if print_opt {
+        for i in 0..order.len() {
+            print!("| {} ", order[&i]);
+        }
+        print!("| = |\n");
     }
-    print!("| = |\n");
 
-    let max_computation = letters.len().pow(2) - 1;
+    let mut sat = false;
+
+    let max_computation = letters.len().pow(2) - (if letters.len() % 2 == 0 { 0 } else { 1 });
     for i in 0..max_computation {
 
-        for j in 0..order.len() {
-            if i & (1 << letters[&order[&j]]) != 0 {
-                print!("| 1 ");
-            } else {
-                print!("| 0 ");
+        if print_opt {
+            for j in 0..order.len() {
+                if i & (1 << letters[&order[&j]]) != 0 {
+                    print!("| 1 ");
+                } else {
+                    print!("| 0 ");
+                }
             }
         }
 
@@ -63,6 +77,39 @@ pub fn print_truth_table(formula: &str) {
             })
             .collect::<String>();
         
-        print!("| {} |\n", if rpn(&new_formula) { 1 } else { 0 });
+        let res_rpn = rpn(&new_formula);
+        if res_rpn {
+            sat = true;
+        }
+        if print_opt {
+            print!("| {} |\n", if res_rpn { 1 } else { 0 });
+        }
+    }
+    sat
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sat_or() {
+        assert_eq!(sat("AB|"), true);
+    }
+
+    #[test]
+    fn test_sat_and() {
+        print_truth_table("AB&");
+        assert_eq!(sat("AB&"), true);
+    }
+
+    #[test]
+    fn test_sat_not_and() {
+        assert_eq!(sat("AA!&"), false);
+    }
+
+    #[test]
+    fn test_sat_xor() {
+        assert_eq!(sat("AA^"), false);
     }
 }

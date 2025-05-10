@@ -15,3 +15,47 @@ pub fn swap_char(s: &mut String, index: usize, new_char: char) -> Result<(), Str
     
     Ok(())
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_swap_char_valid_index() {
+        let mut s = String::from("hello");
+        assert_eq!(swap_char(&mut s, 1, 'a'), Ok(()));
+        assert_eq!(s, "hallo");
+    }
+
+    #[test]
+    fn test_swap_char_out_of_bounds() {
+        let mut s = String::from("hello");
+        assert!(swap_char(&mut s, 10, 'a').is_err());
+    }
+
+    #[test]
+    fn test_swap_char_empty_string() {
+        let mut s = String::from("");
+        assert!(swap_char(&mut s, 0, 'a').is_err());
+    }
+
+    #[test]
+    fn test_swap_char_replace_with_multibyte_char() {
+        let mut s = String::from("hello");
+        assert_eq!(swap_char(&mut s, 1, '😊'), Ok(()));
+        assert_eq!(s, "h😊llo");
+    }
+
+    #[test]
+    fn test_swap_char_replace_multibyte_char() {
+        let mut s = String::from("h😊llo");
+        assert_eq!(swap_char(&mut s, 1, 'a'), Ok(()));
+        assert_eq!(s, "hallo");
+    }
+
+    #[test]
+    fn test_swap_char_replace_last_char() {
+        let mut s = String::from("hello");
+        assert_eq!(swap_char(&mut s, 4, 'z'), Ok(()));
+        assert_eq!(s, "hellz");
+    }
+}
